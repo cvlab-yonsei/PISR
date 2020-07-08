@@ -75,8 +75,8 @@ $ python step2_train_teacher.py --config configs/fsrcnn/step2.yml
 ```
 
 ## Using the pretrained models
-* Download pre-trained weights for teacher model into ``results/fsrcnn/fsrcnn_teacher/checkpoint/`` folder <br>Link: [[weights](https://drive.google.com/file/d/1amqpIg7ah0bJX7jfWXYRitg6y3xlCYhd/view?usp=sharing)]
-* Download pre-trained weights for student model into ``results/fsrcnn/fsrcnn_student/checkpoint/`` folder <br>Link: [[weights](https://drive.google.com/file/d/1ZHyapgp_vhvITODV6Fyac7YQ2zxHQy8f/view?usp=sharing)]
+* Download pre-trained weights for teacher model into ``results/fsrcnn/fsrcnn_teacher/checkpoint/`` folder. <br>Link: [[weights](https://drive.google.com/file/d/1amqpIg7ah0bJX7jfWXYRitg6y3xlCYhd/view?usp=sharing)]
+* Download pre-trained weights for student model into ``results/fsrcnn/fsrcnn_student/checkpoint/`` folder. <br>Link: [[weights](https://drive.google.com/file/d/1ZHyapgp_vhvITODV6Fyac7YQ2zxHQy8f/view?usp=sharing)]
 
 
 --- 
