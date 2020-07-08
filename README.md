@@ -91,5 +91,5 @@ $ python step2_train_teacher.py --config configs/fsrcnn/step2.yml
 ```
 --- 
 ## Credit
-Some part of this code (e.g., data_loader) are based on [EDSR-PyTorch](https://github.com/thstkdgus35/EDSR-PyTorch) repository..
+Some part of this code (e.g., data_loader) are based on [EDSR-PyTorch](https://github.com/thstkdgus35/EDSR-PyTorch) repository.
 
