@@ -2,7 +2,7 @@
 
 This is an official implementation of the paper "Learning with Privileged Information for Efficient Image Super-Resolution", accepted to ECCV2020.
 
-This work effectively boosts the performance of FSRCNN by exploiting a distillation framework, treating HR images as priviliged information.
+This work effectively boosts the performance of FSRCNN by exploiting a distillation framework, treating HR images as privileged information.
 
 For more information, checkout the project site [[website](https://cvlab.yonsei.ac.kr/projects/PISR/)] and the paper [[PDF]()].
 
@@ -64,12 +64,12 @@ First, clone our github repository.
 ```bash
 $ git clone https://github.com/yonsei-cvlab/PISR.git
 ```
-To train our teacher model, run a following script. 
+To train our teacher model, run the following script. 
 ```bash
 $ python step1_train_teacher.py --config configs/fsrcnn/step1.yml
 ```
 
-To train our student model, run a following script. 
+To train our student model, run the following script. 
 ```bash
 $ python step2_train_teacher.py --config configs/fsrcnn/step2.yml
 ```
@@ -91,5 +91,5 @@ $ python step2_train_teacher.py --config configs/fsrcnn/step2.yml
 ```
 --- 
 ## Credit
-Some part of this code (e.g., data_loader) are based on [EDSR-PyTorch](https://github.com/thstkdgus35/EDSR-PyTorch) repository.
+Some parts of this code (e.g., data_loader) are based on [EDSR-PyTorch](https://github.com/thstkdgus35/EDSR-PyTorch) repository.
 
