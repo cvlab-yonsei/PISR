@@ -1,0 +1,69 @@
+base_config: 'configs/fsrcnn/base.ram.yml'
+
+
+teacher_model:
+  name: 'fsrcnn_teacher'
+  params:
+    scale: 2
+    n_colors: 1
+    m: 4
+    k: 1
+    encoder: lcscc
+
+
+student_model:
+  name: 'fsrcnn_student'
+  params:
+    scale: 2
+    n_colors: 1
+    initialize_from:
+      - 'results/fsrcnn/fsrcnn_teacher/checkpoint/'
+    modules_to_initialize:
+      - - 'feature_extraction'
+        - 'shrinking'
+        - 'mapping'
+        - 'expanding'
+        - 'last_layer'
+    vid_info:
+      - 'expanding:None'
+
+
+train:
+  batch_size: 16
+  num_epochs: 1000
+  teacher_dir: ''
+  student_dir: ''
+
+
+eval:
+  batch_size: 1
+
+
+scheduler:
+  name: 'cosine'
+  params:
+    T_max: 1000
+    eta_min: 0.00001
+
+
+optimizer:
+  name: adam
+  params:
+    lr: 0.0001
+
+
+loss:
+  name: 'vid_loss'
+  params:
+    reduction: 'mean'
+    lambda1: 1
+    lambda2: 0.000001
+
+
+visualizer:
+  name: 'sigma'
+
+
+gpu: 0
+
+

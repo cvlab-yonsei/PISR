@@ -1,0 +1,34 @@
+data:
+  scale: 2
+  n_colors: 1
+  rgb_range: 1
+  num_workers: 3
+  pin_memory: False
+
+  train:
+    - name: 'DIV2KRAM'
+      params:
+        base_dir: './data/DIV2K'
+        augment: True
+        patch_size: 192
+        data_range: '1-800'
+        test_every: 1000
+
+  valid:
+    - name: 'DIV2K'
+      params:
+        base_dir: './data/DIV2K'
+        augment: False
+        patch_size: 192
+        data_range: '801-810'
+
+  test:
+    - name: 'Set5'
+      params:
+        base_dir: './data/benchmark/Set5'
+
+
+train:
+ dir: './results/fsrcnn/'
+
+

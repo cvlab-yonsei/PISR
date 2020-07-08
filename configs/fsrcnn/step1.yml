@@ -1,0 +1,48 @@
+base_config: 'configs/fsrcnn/base.ram.yml'
+
+teacher_model:
+  name: 'fsrcnn_teacher'
+  params:
+    scale: 2
+    n_colors: 1
+    m: 4
+    k: 1
+    encoder: lcscc
+
+
+train:
+  batch_size: 16
+  num_epochs: 1000
+  teacher_dir: ''
+
+
+eval:
+  batch_size: 1
+
+
+scheduler:
+  name: 'cosine'
+  params:
+    T_max: 1000
+    eta_min: 0.00001
+
+
+optimizer:
+  name: adam
+  params:
+    lr: 0.001
+
+
+loss:
+  name: 'teacher_LR_constraint_loss'
+  params:
+    reduction: 'mean'
+    lambda2: 0.0001
+
+
+visualizer:
+  name: 'step1'
+
+
+gpu: 0
+
