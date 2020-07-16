@@ -4,7 +4,7 @@ This is an official implementation of the paper "Learning with Privileged Inform
 
 This work effectively boosts the performance of FSRCNN by exploiting a distillation framework, treating HR images as privileged information.
 
-For more information, checkout the project site [[website](https://cvlab.yonsei.ac.kr/projects/PISR/)] and the paper [[PDF]()].
+For more information, checkout the project site [[website](https://cvlab.yonsei.ac.kr/projects/PISR/)] and the paper [[PDF](https://arxiv.org/pdf/2007.07524.pdf)].
 
 ## Overview of our framework
 <img src="method.jpeg" alt="no_image" />
