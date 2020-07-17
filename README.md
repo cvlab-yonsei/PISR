@@ -71,7 +71,7 @@ $ python step1_train_teacher.py --config configs/fsrcnn/step1.yml
 
 To train our student model, run the following script. 
 ```bash
-$ python step2_train_teacher.py --config configs/fsrcnn/step2.yml
+$ python step2_train_student.py --config configs/fsrcnn/step2.yml
 ```
 
 ## Using the pretrained models
