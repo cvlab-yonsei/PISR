@@ -58,7 +58,7 @@ class ParentDataset(data.Dataset):
                 )
             ))
         if self.begin is not None and self.end is not None:
-            return hr_paths[self.begin:self.end], lr_paths[self.begin:self.end]
+            return hr_paths[self.begin:self.end+1], lr_paths[self.begin:self.end+1]
         else:
             return hr_paths, lr_paths
 
