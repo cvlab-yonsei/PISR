@@ -15,7 +15,7 @@ from skimage.io import imread
 import skimage
 import math
 import time
-from datasets import get_train_dataloader, get_valid_dataloader, get_test_dataloader
+from datasets import get_train_dataloader, get_valid_dataloader
 from models import get_model
 from losses import get_loss
 from optimizers import get_optimizer
@@ -141,19 +141,10 @@ def train(config, model, dataloaders, criterion,
     postfix_dict = {'train/lr': 0.0,
                     'train/loss': 0.0,
                     'val/psnr': 0.0,
-                    'val/loss': 0.0,
-                    'test/psnr': 0.0,
-                    'test/loss': 0.0}
-    psnr_list = []
+                    'val/loss': 0.0}
     best_psnr = 0.0
-    best_psnr_mavg = 0.0
+    best_epoch = 0
     for epoch in range(start_epoch, num_epochs):
-
-        # test phase
-        evaluate_single_epoch(config, model, dataloaders['test'],
-                              criterion, epoch, writer,
-                              visualizer, postfix_dict,
-                              eval_type='test')
 
         # val phase
         psnr = evaluate_single_epoch(config, model, dataloaders['val'],
@@ -167,14 +158,10 @@ def train(config, model, dataloaders, criterion,
 
         utils.checkpoint.save_checkpoint(config, model, optimizer, epoch, 0,
                                          model_type=model_type)
-        psnr_list.append(psnr)
-        psnr_list = psnr_list[-10:]
-        psnr_mavg = sum(psnr_list) / len(psnr_list)
 
         if psnr > best_psnr:
             best_psnr = psnr
-        if psnr_mavg > best_psnr_mavg:
-            best_psnr_mavg = psnr_mavg
+            best_epoch = epoch
 
         # train phase
         train_single_epoch(config, model, dataloaders['train'],
@@ -182,7 +169,7 @@ def train(config, model, dataloaders, criterion,
                            visualizer, postfix_dict)
 
 
-    return {'psnr': best_psnr, 'psnr_mavg': best_psnr_mavg}
+    return {'psnr': best_psnr, 'best_epoch': best_epoch}
 
 
 def count_parameters(model):
@@ -209,13 +196,14 @@ def run(config):
 
     print(config.data)
     dataloaders = {'train':get_train_dataloader(config),
-                   'val':get_valid_dataloader(config),
-                   'test':get_test_dataloader(config)}
+                   'val':get_valid_dataloader(config)}
 
     writer = SummaryWriter(config.train[model_type + '_dir'])
     visualizer = get_visualizer(config)
-    train(config, model, dataloaders, criterion, optimizer, scheduler,
+    result = train(config, model, dataloaders, criterion, optimizer, scheduler,
           writer, visualizer, last_epoch+1)
+    
+    print('best psnr : %.3f, best epoch: %d'%(result['best_psnr'], result['best_epoch']))
 
 
 def parse_args():
