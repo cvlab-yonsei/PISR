@@ -16,7 +16,7 @@ import skimage
 import math
 import time
 #from utils.imresize import imresize
-from datasets import get_train_dataloader, get_valid_dataloader, get_test_dataloader
+from datasets import get_train_dataloader, get_valid_dataloader
 from transforms import get_transform
 from models import get_model
 from losses import get_loss
@@ -108,9 +108,7 @@ def evaluate_single_epoch(config, student_model, teacher_model, dataloader,
             HR_img = HR_img.to(device)
             LR_img = LR_img.to(device)
 
-            # for test
             teacher_pred_dict = teacher_model.forward(LR=LR_img,HR=HR_img)
-
             student_pred_dict = student_model.forward(LR=LR_img, teacher_pred_dict=teacher_pred_dict)
             pred_hr = student_pred_dict['hr']
             total_loss += criterion['val'](pred_hr, HR_img).item()
@@ -126,14 +124,13 @@ def evaluate_single_epoch(config, student_model, teacher_model, dataloader,
             tbar.set_description(desc)
             tbar.set_postfix(**postfix_dict)
 
-            if writer is not None and eval_type == 'test':
+            if writer is not None and i < 5:
                 fig = visualizer(LR_img, HR_img,
                                  student_pred_dict, teacher_pred_dict)
                 writer.add_figure('{}/{:04d}'.format(eval_type, i), fig,
                                  global_step=epoch)
             total_iter = i
 
-#         print(total_pseudo_psnr / (i+1))
         log_dict = {}
         avg_loss = total_loss / (total_iter+1)
         avg_psnr = total_psnr / (total_iter+1)
@@ -158,20 +155,10 @@ def train(config, student_model, teacher_model, dataloaders, criterion,
     postfix_dict = {'train/lr': 0.0,
                     'train/loss': 0.0,
                     'val/psnr': 0.0,
-                    'val/loss': 0.0,
-                    'test/psnr': 0.0,
-                    'test/loss': 0.0}
-    psnr_list = []
+                    'val/loss': 0.0}
     best_psnr = 0.0
-    best_psnr_mavg = 0.0
+    best_epoch = 0
     for epoch in range(start_epoch, num_epochs):
-
-        # test phase
-        evaluate_single_epoch(config, student_model, teacher_model,
-                              dataloaders['test'],
-                              criterion, epoch, writer,
-                              visualizer, postfix_dict,
-                              eval_type='test')
 
         # val phase
         psnr = evaluate_single_epoch(config, student_model, teacher_model,
@@ -187,14 +174,9 @@ def train(config, student_model, teacher_model, dataloaders, criterion,
         utils.checkpoint.save_checkpoint(config, student_model, optimizer,
                                          epoch, 0,
                                          model_type='student')
-        psnr_list.append(psnr)
-        psnr_list = psnr_list[-10:]
-        psnr_mavg = sum(psnr_list) / len(psnr_list)
-
         if psnr > best_psnr:
             best_psnr = psnr
-        if psnr_mavg > best_psnr_mavg:
-            best_psnr_mavg = psnr_mavg
+            best_epoch = epoch
 
         # train phase
         train_single_epoch(config, student_model, teacher_model,
@@ -203,7 +185,7 @@ def train(config, student_model, teacher_model, dataloaders, criterion,
                            visualizer, postfix_dict)
 
 
-    return {'psnr': best_psnr, 'psnr_mavg': best_psnr_mavg}
+    return {'best_psnr': best_psnr, 'best_epoch': best_epoch}
 
 
 def count_parameters(model):
@@ -218,7 +200,6 @@ def run(config):
 
 
     # for teacher
-    # optimizer_t = get_optimizer(config, teacher_model.parameters())
     optimizer_t = None
     checkpoint_t = utils.checkpoint.get_initial_checkpoint(config,
                                                          model_type='teacher')
@@ -246,14 +227,15 @@ def run(config):
 
     print(config.data)
     dataloaders = {'train':get_train_dataloader(config, get_transform(config)),
-                   'val':get_valid_dataloader(config),
-                   'test':get_test_dataloader(config)}
+                   'val':get_valid_dataloader(config)}
+                   #'test':get_test_dataloader(config)}
     writer = SummaryWriter(config.train['student' + '_dir'])
     visualizer = get_visualizer(config)
-    train(config, student_model, teacher_model, dataloaders,
+    result = train(config, student_model, teacher_model, dataloaders,
           criterion, optimizer_s, scheduler_s, writer,
           visualizer, last_epoch_s+1)
-
+    
+    print('best psnr : %.3f, best epoch: %d'%(result['best_psnr'], result['best_epoch']))
 
 def parse_args():
     parser = argparse.ArgumentParser(description='student network')

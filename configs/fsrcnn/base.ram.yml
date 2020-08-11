@@ -26,6 +26,15 @@ data:
     - name: 'Set5'
       params:
         base_dir: './data/benchmark/Set5'
+    - name: 'Set14'
+      params:
+        base_dir: './data/benchmark/Set14'
+    - name: 'B100'
+      params:
+        base_dir: './data/benchmark/B100'
+    - name: 'Urban100'
+      params:
+        base_dir: './data/benchmark/Urban100'
 
 
 train:

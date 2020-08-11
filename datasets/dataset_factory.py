@@ -79,26 +79,27 @@ def get_test_dataset(config, transform=None):
     n_colors = config.data.n_colors
     rgb_range = config.data.rgb_range
     batch_size = 1
-    datasets = []
+    dataset_dict = dict()
     for test_dict in config.data.test:
         name = test_dict.name
         params = test_dict.params
-        datasets.append(Benchmark(**params,
+        dataset_dict[name] = Benchmark(**params,
                           scale=scale, n_colors=n_colors,
                           rgb_range=rgb_range, batch_size=batch_size,
-                          name=name))
-    dataset = ConcatDataset(datasets)
-    return dataset
+                          name=name)
+    return dataset_dict
 
 
 def get_test_dataloader(config, transform=None):
     num_workers = config.data.num_workers
-    dataset = get_test_dataset(config, transform)
-    test_dataloader = dataloader.DataLoader(dataset,
-                              shuffle=False,
-                              batch_size=1,
-                              drop_last=False,
-                              pin_memory=True,
-                              num_workers=num_workers)
-    return test_dataloader
+    dataset_dict = get_test_dataset(config, transform)
+    test_dataloader_dict = dict()
+    for name, dataset in dataset_dict.items():
+        test_dataloader_dict[name] = dataloader.DataLoader(dataset,
+                                      shuffle=False,
+                                      batch_size=1,
+                                      drop_last=False,
+                                      pin_memory=True,
+                                      num_workers=num_workers)
+    return test_dataloader_dict
 
