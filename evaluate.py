@@ -39,9 +39,7 @@ def adjust_learning_rate(config, epoch):
     return lr
 
 
-
-def evaluate_single_epoch(config, student_model, teacher_model, dataloader_dict, eval_type):
-    teacher_model.eval()
+def evaluate_single_epoch(config, student_model, dataloader_dict, eval_type):
     student_model.eval()
     log_dict = {}
     with torch.no_grad():
@@ -59,8 +57,7 @@ def evaluate_single_epoch(config, student_model, teacher_model, dataloader_dict,
                 HR_img = HR_img.to(device)
                 LR_img = LR_img.to(device)
 
-                teacher_pred_dict = teacher_model.forward(LR=LR_img,HR=HR_img)
-                student_pred_dict = student_model.forward(LR=LR_img, teacher_pred_dict=teacher_pred_dict)
+                student_pred_dict = student_model.forward(LR=LR_img)
                 pred_hr = student_pred_dict['hr']
                 pred_hr = quantize(pred_hr, config.data.rgb_range)
                 total_psnr += get_psnr(pred_hr, HR_img, config.data.scale,
@@ -80,9 +77,9 @@ def evaluate_single_epoch(config, student_model, teacher_model, dataloader_dict,
     return log_dict
 
 
-def evaluate(config, student_model, teacher_model, dataloaders, start_epoch):
+def evaluate(config, student_model, dataloaders, start_epoch):
     # test phase
-    result = evaluate_single_epoch(config, student_model, teacher_model,
+    result = evaluate_single_epoch(config, student_model,
                           dataloaders, eval_type='test')
     
     return result
@@ -93,21 +90,8 @@ def count_parameters(model):
 
 
 def run(config):
-    teacher_model = get_model(config, 'teacher').to(device)
     student_model = get_model(config, 'student').to(device)
     print('The nubmer of parameters : %d'%count_parameters(student_model))
-
-    # for teacher
-    optimizer_t = None
-    checkpoint_t = utils.checkpoint.get_initial_checkpoint(config,
-                                                         model_type='teacher')
-    if checkpoint_t is not None:
-        last_epoch_t, step_t = utils.checkpoint.load_checkpoint(teacher_model,
-                                 optimizer_t, checkpoint_t, model_type='teacher')
-    else:
-        last_epoch_t, step_t = -1, -1
-    print('teacher model from checkpoint: {} last epoch:{}'.format(
-        checkpoint_t, last_epoch_t))
 
     # for student
     optimizer_s = None
@@ -120,11 +104,10 @@ def run(config):
         last_epoch_s, step_s = -1, -1
     print('student model from checkpoint: {} last epoch:{}'.format(
         checkpoint_s, last_epoch_s))
-
     
     print(config.data)
     dataloaders = get_test_dataloader(config)
-    result = evaluate(config, student_model, teacher_model, dataloaders, last_epoch_s+1)
+    result = evaluate(config, student_model, dataloaders, last_epoch_s+1)
     print(result)
 
     
