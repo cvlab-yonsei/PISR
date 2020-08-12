@@ -79,7 +79,7 @@ $ python step2_train_student.py --config configs/fsrcnn/step2.yml
 * Download pre-trained weights for student model into ``results/fsrcnn/fsrcnn_student/checkpoint/`` folder. <br>Link: [[weights](https://drive.google.com/file/d/1ZHyapgp_vhvITODV6Fyac7YQ2zxHQy8f/view?usp=sharing)]
 
 ## Evaluation
-To evaluate our student model, run following script. Benchmark datasets can be choosed by editing the config file ``configs/fsrcnn/base.ram.yml`` 
+To evaluate our student model, run following script. Benchmark datasets can be choosed by editing the config file ``configs/fsrcnn/base.ram.yml``.
 ```
 $ python evaluate.py --config configs/fsrcnn/step2.yml
 ```
